@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [isDeletingId, setIsDeletingId] = useState(null);
-  const [feedback, setFeedback] = useState(null); // { type: 'success' | 'error', message: string }
+  const [feedback, setFeedback] = useState(null);
 
   const showFeedback = (type, message) => {
     setFeedback({ type, message });
@@ -40,7 +40,6 @@ const Dashboard = () => {
 
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
-    // Smooth scroll to top / form on mobile
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -80,28 +79,28 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F6F0E4] text-[#260E36] flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Feedback Banner */}
         {feedback && (
           <div
-            className={`flex items-center gap-3 p-4 rounded-xl text-sm font-medium border shadow-xs transition-all ${
+            className={`flex items-center gap-3 p-4 rounded-xl text-sm font-bold border shadow-xs transition-all ${
               feedback.type === 'success'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                : 'bg-rose-50 border-rose-200 text-rose-800'
+                ? 'bg-[#EED9F7] border-[#DFBFEE] text-[#581C87]'
+                : 'bg-[#F5E1E6] border-[#E8D0D6] text-[#831843]'
             }`}
           >
             {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+              <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-[#581C87]" />
             ) : (
-              <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
+              <AlertCircle className="w-5 h-5 flex-shrink-0 text-[#831843]" />
             )}
             <span>{feedback.message}</span>
             <button
               onClick={() => setFeedback(null)}
-              className="ml-auto text-xs font-semibold underline opacity-70 hover:opacity-100"
+              className="ml-auto text-xs font-bold underline opacity-80 hover:opacity-100"
             >
               Dismiss
             </button>
@@ -111,10 +110,10 @@ const Dashboard = () => {
         {/* Dashboard Title & Quick Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#260E36] tracking-tight">
               Financial Overview
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-[#5B4469] text-sm mt-1 font-medium">
               Track your income, control your expenditures, and optimize your monthly budget.
             </p>
           </div>
@@ -122,7 +121,7 @@ const Dashboard = () => {
           <button
             onClick={fetchTransactions}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-semibold shadow-xs transition self-start sm:self-auto disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#EFE7D6] border border-[#DDD0B8] text-[#260E36] hover:bg-[#581C87] hover:text-[#FAF5EB] rounded-xl text-xs font-bold shadow-xs transition self-start sm:self-auto disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             Refresh Data
@@ -152,9 +151,9 @@ const Dashboard = () => {
         {/* Full-width Transactions Table */}
         <div className="w-full">
           {loading && transactions.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center border border-slate-200/80 shadow-xs">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto mb-3" />
-              <p className="text-slate-600 font-medium">Loading your transactions...</p>
+            <div className="bg-[#FBF7EE] rounded-2xl p-12 text-center border border-[#DDD0B8] shadow-xs">
+              <Loader2 className="w-8 h-8 animate-spin text-[#6B21A8] mx-auto mb-3" />
+              <p className="text-[#4C2860] font-semibold text-base">Loading your transactions...</p>
             </div>
           ) : (
             <TransactionList
@@ -168,7 +167,7 @@ const Dashboard = () => {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
+      <footer className="mt-auto border-t border-[#DDD0B8] bg-[#FBF7EE] py-6 text-center text-xs text-[#5B4469] font-medium">
         <p>© {new Date().getFullYear()} Biptya Finances. All rights reserved.</p>
       </footer>
     </div>
@@ -176,4 +175,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

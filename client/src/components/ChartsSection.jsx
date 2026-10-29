@@ -15,12 +15,12 @@ import {
 import { PieChart as PieIcon, BarChart3, Info } from 'lucide-react';
 
 const CATEGORY_COLORS = {
-  Food: '#f97316',
-  Rent: '#8b5cf6',
-  Salary: '#10b981',
-  Entertainment: '#ec4899',
-  Utilities: '#3b82f6',
-  Other: '#64748b',
+  Food: '#C2410C',
+  Rent: '#6B21A8',
+  Salary: '#047857',
+  Entertainment: '#A21CAF',
+  Utilities: '#1D4ED8',
+  Other: '#78350F',
 };
 
 const formatCurrency = (val) => {
@@ -36,9 +36,9 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0];
     return (
-      <div className="bg-slate-900 text-white text-xs px-3 py-2 rounded-xl shadow-lg border border-slate-700">
-        <p className="font-semibold">{data.name}</p>
-        <p className="text-slate-300">
+      <div className="bg-[#3B0764] text-[#FAF5EB] text-xs px-3 py-2 rounded-xl shadow-lg border border-[#581C87]">
+        <p className="font-bold">{data.name}</p>
+        <p className="text-[#E9D5FF]">
           {formatCurrency(data.value)}
           {data.payload?.percentage ? ` (${data.payload.percentage}%)` : ''}
         </p>
@@ -76,39 +76,39 @@ const ChartsSection = ({ transactions = [] }) => {
     {
       category: 'Income',
       amount: totalIncome,
-      color: '#10b981',
+      color: '#6B21A8',
     },
     {
       category: 'Expenses',
       amount: totalExpenseAmount,
-      color: '#ef4444',
+      color: '#9F1239',
     },
   ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Expenses by Category (Pie Chart) */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+      <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs flex flex-col justify-between">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#EED9F7] text-[#581C87] flex items-center justify-center">
               <PieIcon className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Expenses by Category</h3>
-              <p className="text-xs text-slate-500">Distribution of your spending</p>
+              <h3 className="text-lg font-bold text-[#260E36]">Expenses by Category</h3>
+              <p className="text-xs text-[#5B4469]">Distribution of your spending</p>
             </div>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">
+          <span className="text-xs font-bold px-2.5 py-1 bg-[#EFE7D6] text-[#581C87] border border-[#DDD0B8] rounded-full">
             Total: {formatCurrency(totalExpenseAmount)}
           </span>
         </div>
 
         {pieData.length === 0 ? (
-          <div className="h-64 flex flex-col items-center justify-center text-slate-400">
-            <Info className="w-8 h-8 mb-2 opacity-50" />
-            <p className="text-sm">No expense records to display</p>
-            <p className="text-xs text-slate-400 mt-0.5">Add expense transactions to see breakdown</p>
+          <div className="h-64 flex flex-col items-center justify-center text-[#5B4469]">
+            <Info className="w-8 h-8 mb-2 opacity-60 text-[#7E22CE]" />
+            <p className="text-sm font-semibold">No expense records to display</p>
+            <p className="text-xs text-[#5B4469] mt-0.5">Add expense transactions to see breakdown</p>
           </div>
         ) : (
           <div className="h-64 w-full">
@@ -126,7 +126,7 @@ const ChartsSection = ({ transactions = [] }) => {
                   {pieData.map((entry) => (
                     <Cell
                       key={`cell-${entry.name}`}
-                      fill={CATEGORY_COLORS[entry.name] || '#94a3b8'}
+                      fill={CATEGORY_COLORS[entry.name] || '#78350F'}
                     />
                   ))}
                 </Pie>
@@ -136,7 +136,7 @@ const ChartsSection = ({ transactions = [] }) => {
                   height={36}
                   iconType="circle"
                   formatter={(value) => (
-                    <span className="text-xs text-slate-600 font-medium mr-2">{value}</span>
+                    <span className="text-xs text-[#260E36] font-bold mr-2">{value}</span>
                   )}
                 />
               </PieChart>
@@ -146,22 +146,22 @@ const ChartsSection = ({ transactions = [] }) => {
       </div>
 
       {/* Income vs Expenses (Bar Chart) */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+      <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs flex flex-col justify-between">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#EED9F7] text-[#581C87] flex items-center justify-center">
               <BarChart3 className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Income vs. Expenses</h3>
-              <p className="text-xs text-slate-500">Cash flow comparison</p>
+              <h3 className="text-lg font-bold text-[#260E36]">Income vs. Expenses</h3>
+              <p className="text-xs text-[#5B4469]">Cash flow comparison</p>
             </div>
           </div>
           <span
-            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+            className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
               totalIncome >= totalExpenseAmount
-                ? 'bg-emerald-50 text-emerald-700'
-                : 'bg-rose-50 text-rose-700'
+                ? 'bg-[#EED9F7] text-[#581C87] border-[#DFBFEE]'
+                : 'bg-[#F5E1E6] text-[#831843] border-[#E8D0D6]'
             }`}
           >
             Net: {formatCurrency(totalIncome - totalExpenseAmount)}
@@ -169,10 +169,10 @@ const ChartsSection = ({ transactions = [] }) => {
         </div>
 
         {totalIncome === 0 && totalExpenseAmount === 0 ? (
-          <div className="h-64 flex flex-col items-center justify-center text-slate-400">
-            <Info className="w-8 h-8 mb-2 opacity-50" />
-            <p className="text-sm">No transaction data yet</p>
-            <p className="text-xs text-slate-400 mt-0.5">Add transactions to compare cash flow</p>
+          <div className="h-64 flex flex-col items-center justify-center text-[#5B4469]">
+            <Info className="w-8 h-8 mb-2 opacity-60 text-[#7E22CE]" />
+            <p className="text-sm font-semibold">No transaction data yet</p>
+            <p className="text-xs text-[#5B4469] mt-0.5">Add transactions to compare cash flow</p>
           </div>
         ) : (
           <div className="h-64 w-full">
@@ -181,23 +181,23 @@ const ChartsSection = ({ transactions = [] }) => {
                 data={barData}
                 margin={{ top: 15, right: 15, left: 10, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EFE7D6" />
                 <XAxis
                   dataKey="category"
-                  stroke="#94a3b8"
+                  stroke="#5B4469"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#94a3b8"
+                  stroke="#5B4469"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(val) => `₹${val}`}
                 />
                 <Tooltip
-                  cursor={{ fill: 'rgba(241, 245, 249, 0.6)' }}
+                  cursor={{ fill: 'rgba(238, 217, 247, 0.4)' }}
                   formatter={(value) => [formatCurrency(value), 'Amount']}
                 />
                 <Bar dataKey="amount" radius={[8, 8, 0, 0]} maxBarSize={60}>
@@ -215,4 +215,3 @@ const ChartsSection = ({ transactions = [] }) => {
 };
 
 export default ChartsSection;
-

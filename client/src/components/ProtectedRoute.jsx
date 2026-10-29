@@ -8,9 +8,9 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mb-3" />
-        <p className="text-slate-600 font-medium">Verifying authentication...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F6F0E4]">
+        <Loader2 className="w-10 h-10 animate-spin text-[#6B21A8] mb-3" />
+        <p className="text-[#4C2860] font-medium text-base">Verifying authentication...</p>
       </div>
     );
   }
@@ -23,4 +23,3 @@ const ProtectedRoute = ({ children }) => {
 };
 
 export default ProtectedRoute;
-

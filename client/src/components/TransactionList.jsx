@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Edit2, Trash2, Search, Filter, ArrowUpRight, ArrowDownRight, Tag, Calendar, AlertCircle } from 'lucide-react';
+import { Edit2, Trash2, Search, Filter, ArrowUpRight, ArrowDownRight, Tag } from 'lucide-react';
 
 const categoryBadgeStyles = {
-  Food: 'bg-orange-50 text-orange-700 border-orange-200',
-  Rent: 'bg-purple-50 text-purple-700 border-purple-200',
-  Salary: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  Entertainment: 'bg-pink-50 text-pink-700 border-pink-200',
-  Utilities: 'bg-blue-50 text-blue-700 border-blue-200',
-  Other: 'bg-slate-100 text-slate-700 border-slate-200',
+  Food: 'bg-[#F2DFCE] text-[#7C2D12] border-[#E5CAAD]',
+  Rent: 'bg-[#EED9F7] text-[#581C87] border-[#DFBFEE]',
+  Salary: 'bg-[#DFECE1] text-[#14532D] border-[#C4DFC8]',
+  Entertainment: 'bg-[#F5DDEB] text-[#831843] border-[#E8BED6]',
+  Utilities: 'bg-[#DDE9F5] text-[#1E3A8A] border-[#BFD5EB]',
+  Other: 'bg-[#E8DEC8] text-[#4A3B2C] border-[#D4C4A8]',
 };
 
 const formatCurrency = (amount) => {
@@ -41,61 +41,61 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
   });
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+    <div className="bg-[#FBF7EE] rounded-2xl border border-[#DDD0B8] shadow-xs overflow-hidden">
       {/* Header and Filters */}
-      <div className="p-6 border-b border-slate-100">
+      <div className="p-6 border-b border-[#EFE7D6]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Transaction History</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h2 className="text-xl font-bold text-[#260E36]">Transaction History</h2>
+            <p className="text-xs text-[#5B4469] mt-0.5">
               Showing {filteredTransactions.length} of {transactions.length} records
             </p>
           </div>
 
           {/* Search bar */}
-          <div className="relative min-w-[220px]">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <div className="relative min-w-[240px]">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7E22CE] pointer-events-none" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by title..."
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+              className="w-full pl-9 pr-3 py-1.5 bg-[#EFE7D6] border border-[#DDD0B8] rounded-xl text-xs text-[#260E36] placeholder-[#8A7397] focus:outline-none focus:ring-2 focus:ring-[#7E22CE] focus:bg-[#FAF5EB] transition"
             />
           </div>
         </div>
 
         {/* Filter Pills */}
         <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-          <span className="text-slate-400 flex items-center gap-1 mr-1">
-            <Filter className="w-3.5 h-3.5" /> Filter:
+          <span className="text-[#5B4469] flex items-center gap-1 mr-1 font-semibold">
+            <Filter className="w-3.5 h-3.5 text-[#7E22CE]" /> Filter:
           </span>
           <button
             onClick={() => setSelectedType('all')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition ${
+            className={`px-3 py-1 rounded-lg font-bold border transition ${
               selectedType === 'all'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#581C87] text-[#FAF5EB] border-[#4A154B]'
+                : 'bg-[#EFE7D6] text-[#5B4469] border-[#DDD0B8] hover:bg-[#E8DEC8]'
             }`}
           >
             All Types
           </button>
           <button
             onClick={() => setSelectedType('income')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition ${
+            className={`px-3 py-1 rounded-lg font-bold border transition ${
               selectedType === 'income'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#581C87] text-[#FAF5EB] border-[#3B0764]'
+                : 'bg-[#EFE7D6] text-[#5B4469] border-[#DDD0B8] hover:bg-[#E8DEC8]'
             }`}
           >
             Income Only
           </button>
           <button
             onClick={() => setSelectedType('expense')}
-            className={`px-2.5 py-1 rounded-lg font-medium transition ${
+            className={`px-3 py-1 rounded-lg font-bold border transition ${
               selectedType === 'expense'
-                ? 'bg-rose-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-[#831843] text-[#FAF5EB] border-[#701A75]'
+                : 'bg-[#EFE7D6] text-[#5B4469] border-[#DDD0B8] hover:bg-[#E8DEC8]'
             }`}
           >
             Expenses Only
@@ -104,7 +104,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="ml-auto px-2 py-1 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            className="ml-auto px-3 py-1 bg-[#EFE7D6] border border-[#DDD0B8] rounded-lg text-[#260E36] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#7E22CE] focus:bg-[#FAF5EB] cursor-pointer"
           >
             <option value="all">All Categories</option>
             <option value="Food">Food</option>
@@ -120,11 +120,11 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
       {/* Transactions List / Table */}
       {filteredTransactions.length === 0 ? (
         <div className="py-16 px-4 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#EFE7D6] text-[#7E22CE] flex items-center justify-center mx-auto mb-3 border border-[#DDD0B8]">
             <Tag className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-700">No transactions found</h3>
-          <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+          <h3 className="text-base font-bold text-[#260E36]">No transactions found</h3>
+          <p className="text-xs text-[#5B4469] mt-1 max-w-xs mx-auto">
             {transactions.length === 0
               ? 'Start tracking your spending by adding your first transaction above.'
               : 'No transactions match your current search or filter criteria.'}
@@ -134,7 +134,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/75 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+              <tr className="border-b border-[#DDD0B8] bg-[#EFE7D6] text-[11px] uppercase tracking-wider text-[#5B4469] font-bold">
                 <th className="py-3 px-6">Transaction</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Date</th>
@@ -142,22 +142,22 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                 <th className="py-3 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-[#EFE7D6] text-sm">
               {filteredTransactions.map((t) => {
                 const isIncome = t.type === 'income';
                 return (
                   <tr
                     key={t._id}
-                    className="hover:bg-slate-50/70 transition-colors group"
+                    className="hover:bg-[#F3EBDD] transition-colors group"
                   >
                     {/* Title + Type icon */}
-                    <td className="py-4 px-6 font-medium text-slate-800">
+                    <td className="py-4 px-6 font-semibold text-[#260E36]">
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             isIncome
-                              ? 'bg-emerald-50 text-emerald-600'
-                              : 'bg-rose-50 text-rose-600'
+                              ? 'bg-[#EED9F7] text-[#581C87]'
+                              : 'bg-[#F5E1E6] text-[#831843]'
                           }`}
                         >
                           {isIncome ? (
@@ -166,7 +166,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                             <ArrowDownRight className="w-4 h-4" />
                           )}
                         </div>
-                        <span className="font-semibold text-slate-900 line-clamp-1">
+                        <span className="font-bold text-[#260E36] line-clamp-1">
                           {t.title}
                         </span>
                       </div>
@@ -175,7 +175,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                     {/* Category */}
                     <td className="py-4 px-4 whitespace-nowrap">
                       <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                           categoryBadgeStyles[t.category] || categoryBadgeStyles.Other
                         }`}
                       >
@@ -184,14 +184,14 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                     </td>
 
                     {/* Date */}
-                    <td className="py-4 px-4 text-slate-500 text-xs whitespace-nowrap">
+                    <td className="py-4 px-4 text-[#5B4469] text-xs font-semibold whitespace-nowrap">
                       {formatDate(t.date)}
                     </td>
 
                     {/* Amount */}
                     <td
-                      className={`py-4 px-4 text-right font-bold whitespace-nowrap ${
-                        isIncome ? 'text-emerald-600' : 'text-rose-600'
+                      className={`py-4 px-4 text-right font-extrabold whitespace-nowrap ${
+                        isIncome ? 'text-[#581C87]' : 'text-[#831843]'
                       }`}
                     >
                       {isIncome ? '+' : '-'} {formatCurrency(t.amount)}
@@ -202,7 +202,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => onEdit(t)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                          className="p-1.5 rounded-lg text-[#5B4469] hover:text-[#581C87] hover:bg-[#EED9F7] transition"
                           title="Edit transaction"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -210,7 +210,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                         <button
                           onClick={() => onDelete(t._id)}
                           disabled={isDeletingId === t._id}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-[#5B4469] hover:text-[#831843] hover:bg-[#F5E1E6] transition disabled:opacity-50"
                           title="Delete transaction"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -229,4 +229,3 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
 };
 
 export default TransactionList;
-
