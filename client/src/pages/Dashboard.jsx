@@ -1,3 +1,17 @@
+/**
+ * SUMMARY:
+ * This is the central Dashboard page component (/dashboard):
+ * 1. Data Fetching: Calls GET /api/transactions on load to retrieve the user's records.
+ * 2. Layout Integration:
+ *    - Navbar: Logo, user profile, logout.
+ *    - Feedback Banner: Displays momentary success/error alert messages.
+ *    - SummaryCards: Total Income, Total Expenses, and Current Balance in Rupees.
+ *    - TransactionForm: Form to create a new transaction or edit an existing one.
+ *    - ChartsSection: Pie Chart of category expenses and Bar Chart of income vs expenses.
+ *    - TransactionList: Full interactive history table with edit and delete capabilities.
+ * 3. State Coordination: Manages edit selection, delete confirmation, and data refreshes.
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import SummaryCards from '../components/SummaryCards';
@@ -8,12 +22,14 @@ import api from '../api';
 import { Loader2, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const Dashboard = () => {
+  // State variables for transactions, loading, and interactive edits
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [isDeletingId, setIsDeletingId] = useState(null);
-  const [feedback, setFeedback] = useState(null);
+  const [feedback, setFeedback] = useState(null); // { type: 'success' | 'error', message: string }
 
+  // Displays a self-dismissing toast/banner notification
   const showFeedback = (type, message) => {
     setFeedback({ type, message });
     setTimeout(() => {
@@ -21,6 +37,7 @@ const Dashboard = () => {
     }, 4000);
   };
 
+  // Fetches latest transactions from the backend
   const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true);
@@ -34,19 +51,23 @@ const Dashboard = () => {
     }
   }, []);
 
+  // Fetch transactions once upon page mount
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
 
+  // Handle Edit button click: Populates the form and scrolls up smoothly
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handle Cancel Edit button click
   const handleCancelEdit = () => {
     setEditingTransaction(null);
   };
 
+  // Callback triggered after a transaction is saved/updated successfully
   const handleTransactionSaved = () => {
     const isEdit = !!editingTransaction;
     setEditingTransaction(null);
@@ -57,6 +78,7 @@ const Dashboard = () => {
     );
   };
 
+  // Handle Delete button click with confirmation check
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this transaction?')) {
       return;
@@ -65,6 +87,7 @@ const Dashboard = () => {
     try {
       setIsDeletingId(id);
       await api.delete(`/transactions/${id}`);
+      // Remove deleted item from local state immediately
       setTransactions((prev) => prev.filter((t) => t._id !== id));
       showFeedback('success', 'Transaction deleted successfully.');
       if (editingTransaction && editingTransaction._id === id) {
@@ -80,10 +103,11 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#F6F0E4] text-[#260E36] flex flex-col">
+      {/* Top Navigation */}
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Feedback Banner */}
+        {/* Feedback / Alert Banner */}
         {feedback && (
           <div
             className={`flex items-center gap-3 p-4 rounded-xl text-sm font-bold border shadow-xs transition-all ${
@@ -100,14 +124,14 @@ const Dashboard = () => {
             <span>{feedback.message}</span>
             <button
               onClick={() => setFeedback(null)}
-              className="ml-auto text-xs font-bold underline opacity-80 hover:opacity-100"
+              className="ml-auto text-xs font-bold underline opacity-80 hover:opacity-100 cursor-pointer"
             >
               Dismiss
             </button>
           </div>
         )}
 
-        {/* Dashboard Title & Quick Actions */}
+        {/* Dashboard Title & Quick Refresh Action */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-[#260E36] tracking-tight">
@@ -128,12 +152,12 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Summary Cards */}
+        {/* Summary Metric Cards (Balance, Income, Expenses) */}
         <SummaryCards transactions={transactions} />
 
-        {/* Main Grid: Form & Visualizations */}
+        {/* Two-Column Layout: Form + Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Transaction Form Column */}
+          {/* Column 1: Add/Edit Transaction Form */}
           <div className="lg:col-span-1">
             <TransactionForm
               onTransactionSaved={handleTransactionSaved}
@@ -142,13 +166,13 @@ const Dashboard = () => {
             />
           </div>
 
-          {/* Charts Column */}
+          {/* Column 2: Visual Charts (Pie + Bar) */}
           <div className="lg:col-span-2">
             <ChartsSection transactions={transactions} />
           </div>
         </div>
 
-        {/* Full-width Transactions Table */}
+        {/* Full-width Transactions History Table */}
         <div className="w-full">
           {loading && transactions.length === 0 ? (
             <div className="bg-[#FBF7EE] rounded-2xl p-12 text-center border border-[#DDD0B8] shadow-xs">

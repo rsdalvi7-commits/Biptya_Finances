@@ -1,10 +1,21 @@
+/**
+ * SUMMARY:
+ * This component provides the interactive form to ADD or EDIT transactions:
+ * 1. Mode 1 (Add): Blank form with defaults (Expense, Food, Today's date). Submitting sends a POST request.
+ * 2. Mode 2 (Edit): Automatically pre-populates all inputs when an existing transaction is selected. Submitting sends a PUT request.
+ * 3. Validation: Ensures title is provided and amount is a positive number.
+ * 4. Refresh: Triggers `onTransactionSaved()` on completion to reload the transaction list and charts automatically.
+ */
+
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { PlusCircle, Edit3, X, Loader2, IndianRupee, Calendar, Tag, FileText } from 'lucide-react';
 
+// The six supported spending/income categories
 const CATEGORIES = ['Food', 'Rent', 'Salary', 'Entertainment', 'Utilities', 'Other'];
 
 const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit }) => {
+  // Local form field state
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('expense');
@@ -13,7 +24,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Populate form if in edit mode
+  // When 'editingTransaction' changes, either populate the form or reset it
   useEffect(() => {
     if (editingTransaction) {
       setTitle(editingTransaction.title || '');
@@ -31,6 +42,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
     }
   }, [editingTransaction]);
 
+  // Clears the form back to initial blank values
   const resetForm = () => {
     setTitle('');
     setAmount('');
@@ -40,10 +52,12 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
     setError('');
   };
 
+  // Handles form submission (Create or Update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    // Basic frontend checks
     if (!title.trim()) {
       setError('Title is required');
       return;
@@ -67,12 +81,15 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
 
     try {
       if (editingTransaction) {
+        // Edit mode: Send PUT to update existing record
         await api.put(`/transactions/${editingTransaction._id}`, payload);
       } else {
+        // Add mode: Send POST to create new record
         await api.post('/transactions', payload);
       }
 
       resetForm();
+      // Notify parent Dashboard to reload transaction data
       if (onTransactionSaved) {
         onTransactionSaved();
       }
@@ -90,6 +107,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
 
   return (
     <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs">
+      {/* Form Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           {editingTransaction ? (
@@ -106,11 +124,12 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
           </h2>
         </div>
 
+        {/* Cancel Edit Button */}
         {editingTransaction && (
           <button
             type="button"
             onClick={onCancelEdit}
-            className="text-xs text-[#5B4469] hover:text-[#260E36] flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#EFE7D6] border border-[#DDD0B8] transition font-semibold"
+            className="text-xs text-[#5B4469] hover:text-[#260E36] flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#EFE7D6] border border-[#DDD0B8] transition font-semibold cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
             Cancel Edit
@@ -118,6 +137,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
         )}
       </div>
 
+      {/* Error alert banner */}
       {error && (
         <div className="mb-4 p-3 rounded-xl bg-[#F5E1E6] border border-[#E8D0D6] text-[#831843] text-xs font-semibold">
           {error}
@@ -125,7 +145,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Type selector (Income / Expense toggle) */}
+        {/* Type selector (Expense vs Income toggle buttons) */}
         <div>
           <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
             Transaction Type
@@ -137,7 +157,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
                 setType('expense');
                 if (category === 'Salary') setCategory('Food');
               }}
-              className={`py-2 px-3 rounded-xl text-sm font-semibold border transition flex items-center justify-center gap-2 ${
+              className={`py-2 px-3 rounded-xl text-sm font-semibold border transition flex items-center justify-center gap-2 cursor-pointer ${
                 type === 'expense'
                   ? 'bg-[#F5E1E6] border-[#BE123C] text-[#831843] ring-2 ring-[#BE123C]/20'
                   : 'bg-[#EFE7D6] border-[#DDD0B8] text-[#5B4469] hover:bg-[#E8DEC8]'
@@ -152,7 +172,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
                 setType('income');
                 if (category === 'Food') setCategory('Salary');
               }}
-              className={`py-2 px-3 rounded-xl text-sm font-semibold border transition flex items-center justify-center gap-2 ${
+              className={`py-2 px-3 rounded-xl text-sm font-semibold border transition flex items-center justify-center gap-2 cursor-pointer ${
                 type === 'income'
                   ? 'bg-[#EED9F7] border-[#7E22CE] text-[#581C87] ring-2 ring-[#7E22CE]/20'
                   : 'bg-[#EFE7D6] border-[#DDD0B8] text-[#5B4469] hover:bg-[#E8DEC8]'
@@ -164,7 +184,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
           </div>
         </div>
 
-        {/* Title */}
+        {/* Title input */}
         <div>
           <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
             Title / Description
@@ -184,7 +204,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
           </div>
         </div>
 
-        {/* Amount & Date Grid */}
+        {/* Amount & Date inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
@@ -226,7 +246,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
           </div>
         </div>
 
-        {/* Category */}
+        {/* Category dropdown */}
         <div>
           <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
             Category
@@ -252,7 +272,7 @@ const TransactionForm = ({ onTransactionSaved, editingTransaction, onCancelEdit 
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit button with loading spinner */}
         <button
           type="submit"
           disabled={loading}

@@ -1,9 +1,22 @@
+/**
+ * SUMMARY:
+ * This component renders the User Registration page (/register):
+ * - Clean branded form with Biptya Finances logo and Times New Roman typography.
+ * - Form inputs for Email, Password (min 6 characters), and Confirm Password.
+ * - Verifies that both password fields match before making the API call.
+ * - Calls `register(email, password)` via AuthContext on submission.
+ * - Saves session token and redirects directly to /dashboard upon successful registration.
+ * - Displays an error banner if the email is already registered or invalid.
+ * - Includes a link back to the login page for existing users.
+ */
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Wallet, Mail, Lock, ArrowRight, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
+  // Input fields and UI state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,20 +27,24 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  // Handle registration form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    // Ensure all 3 fields are filled in
     if (!email || !password || !confirmPassword) {
       setError('Please fill in all fields.');
       return;
     }
 
+    // Minimum password length check
     if (password.length < 6) {
       setError('Password must be at least 6 characters long.');
       return;
     }
 
+    // Confirm passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
@@ -35,7 +52,9 @@ const Register = () => {
 
     setIsSubmitting(true);
     try {
+      // Register with the backend API
       await register(email, password);
+      // Redirect to dashboard
       navigate('/dashboard');
     } catch (err) {
       const msg = err.response?.data?.message || 'Registration failed. Please try again.';
@@ -61,13 +80,14 @@ const Register = () => {
           </p>
         </div>
 
-        {/* Card */}
+        {/* Card (Warm Cream Background) */}
         <div className="bg-[#FBF7EE] rounded-2xl shadow-2xl p-8 border border-[#DDD0B8]">
           <h2 className="text-2xl font-bold text-[#260E36] mb-1">Create Account</h2>
           <p className="text-[#5B4469] text-sm mb-6 font-medium">
             Get started with your personal finance tracker
           </p>
 
+          {/* Error Alert */}
           {error && (
             <div className="mb-5 flex items-center gap-3 p-3.5 rounded-xl bg-[#F5E1E6] border border-[#E8D0D6] text-[#831843] text-sm font-bold">
               <AlertCircle className="w-5 h-5 flex-shrink-0 text-[#831843]" />
@@ -76,6 +96,7 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email Address */}
             <div>
               <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
                 Email Address
@@ -95,6 +116,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Password */}
             <div>
               <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
                 Password (min 6 characters)
@@ -121,6 +143,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Confirm Password */}
             <div>
               <label className="block text-xs font-bold text-[#5B4469] uppercase tracking-wider mb-1.5">
                 Confirm Password
@@ -140,6 +163,7 @@ const Register = () => {
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -159,6 +183,7 @@ const Register = () => {
             </button>
           </form>
 
+          {/* Link to Login */}
           <div className="mt-6 pt-6 border-t border-[#EFE7D6] text-center">
             <p className="text-sm text-[#5B4469] font-medium">
               Already have an account?{' '}

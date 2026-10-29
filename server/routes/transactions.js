@@ -1,17 +1,31 @@
+/**
+ * SUMMARY:
+ * This file handles all CRUD (Create, Read, Update, Delete) operations for transactions:
+ * 1. GET    /api/transactions     : Fetches all transactions belonging to the logged-in user (sorted newest first).
+ * 2. POST   /api/transactions     : Adds a new transaction record linked to the user's ID.
+ * 3. PUT    /api/transactions/:id : Updates an existing transaction (only if the user owns it).
+ * 4. DELETE /api/transactions/:id : Deletes a transaction (only if the user owns it).
+ *
+ * All routes here are protected with the 'auth' middleware, so `req.user.id` is always available.
+ */
+
 import express from 'express';
 import Transaction from '../models/Transaction.js';
 import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// All transaction routes are protected
+// Apply auth middleware to all routes in this file (user must be logged in)
 router.use(auth);
 
-// @route   GET /api/transactions
-// @desc    Get all transactions for authenticated user
-// @access  Private
+// ==========================================
+// 1. GET ALL TRANSACTIONS
+// GET /api/transactions
+// ==========================================
 router.get('/', async (req, res) => {
   try {
+    // Find only transactions that belong to this user (userId: req.user.id)
+    // Sort by date descending (newest transactions first)
     const transactions = await Transaction.find({ userId: req.user.id }).sort({ date: -1, createdAt: -1 });
     return res.json(transactions);
   } catch (err) {
@@ -20,32 +34,38 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   POST /api/transactions
-// @desc    Create a new transaction
-// @access  Private
+// ==========================================
+// 2. CREATE A NEW TRANSACTION
+// POST /api/transactions
+// ==========================================
 router.post('/', async (req, res) => {
   try {
     const { title, amount, type, category, date } = req.body;
 
+    // Check that all required fields are present
     if (!title || amount === undefined || !type || !category) {
       return res.status(400).json({ message: 'Title, amount, type, and category are required' });
     }
 
+    // Ensure amount is a positive number
     const numericAmount = Number(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
       return res.status(400).json({ message: 'Amount must be a positive number' });
     }
 
+    // Validate type ('income' or 'expense')
     const validTypes = ['income', 'expense'];
     if (!validTypes.includes(type)) {
       return res.status(400).json({ message: `Type must be one of: ${validTypes.join(', ')}` });
     }
 
+    // Validate category against allowed list
     const validCategories = ['Food', 'Rent', 'Salary', 'Entertainment', 'Utilities', 'Other'];
     if (!validCategories.includes(category)) {
       return res.status(400).json({ message: `Category must be one of: ${validCategories.join(', ')}` });
     }
 
+    // Create new transaction document tied to current user's ID
     const transaction = new Transaction({
       userId: req.user.id,
       title: title.trim(),
@@ -67,13 +87,15 @@ router.post('/', async (req, res) => {
   }
 });
 
-// @route   PUT /api/transactions/:id
-// @desc    Update a transaction
-// @access  Private
+// ==========================================
+// 3. UPDATE AN EXISTING TRANSACTION
+// PUT /api/transactions/:id
+// ==========================================
 router.put('/:id', async (req, res) => {
   try {
     const { title, amount, type, category, date } = req.body;
 
+    // Find transaction by its ID AND ensure it belongs to the logged-in user
     const transaction = await Transaction.findOne({
       _id: req.params.id,
       userId: req.user.id,
@@ -83,6 +105,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Transaction not found or unauthorized' });
     }
 
+    // Update only the fields that were provided
     if (title !== undefined) transaction.title = title.trim();
     if (amount !== undefined) {
       const numericAmount = Number(amount);
@@ -120,11 +143,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// @route   DELETE /api/transactions/:id
-// @desc    Delete a transaction
-// @access  Private
+// ==========================================
+// 4. DELETE A TRANSACTION
+// DELETE /api/transactions/:id
+// ==========================================
 router.delete('/:id', async (req, res) => {
   try {
+    // Delete transaction matching ID and confirming current user ownership
     const transaction = await Transaction.findOneAndDelete({
       _id: req.params.id,
       userId: req.user.id,
@@ -145,4 +170,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
-

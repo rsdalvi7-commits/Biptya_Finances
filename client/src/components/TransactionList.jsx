@@ -1,6 +1,18 @@
+/**
+ * SUMMARY:
+ * This component displays the user's transaction records in an organized table:
+ * 1. Live Search    : Filters transactions by matching the title/description in real-time.
+ * 2. Type Filters   : Filter by All, Income Only, or Expenses Only.
+ * 3. Category Filter: Dropdown to filter by specific category (Food, Rent, Salary, etc.).
+ * 4. Visual Styles  : Income amounts formatted in bold purple (+ ₹...), expenses in berry (- ₹...).
+ * 5. Actions        : Action buttons for each row to Edit (triggers onEdit) or Delete (triggers onDelete).
+ * 6. Empty States   : Friendly placeholder message when no transactions match.
+ */
+
 import React, { useState } from 'react';
 import { Edit2, Trash2, Search, Filter, ArrowUpRight, ArrowDownRight, Tag } from 'lucide-react';
 
+// Custom warm pill badge colors for each category in the Cream & Purple scheme
 const categoryBadgeStyles = {
   Food: 'bg-[#F2DFCE] text-[#7C2D12] border-[#E5CAAD]',
   Rent: 'bg-[#EED9F7] text-[#581C87] border-[#DFBFEE]',
@@ -10,6 +22,7 @@ const categoryBadgeStyles = {
   Other: 'bg-[#E8DEC8] text-[#4A3B2C] border-[#D4C4A8]',
 };
 
+// Formats numbers into Indian Rupees currency string (e.g. ₹1,200.00)
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -18,6 +31,7 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
+// Formats ISO date string into readable date (e.g. Oct 29, 2026)
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const d = new Date(dateString);
@@ -29,10 +43,12 @@ const formatDate = (dateString) => {
 };
 
 const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) => {
+  // Search keyword and filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
+  // Filter transactions based on search input, type pill, and category dropdown
   const filteredTransactions = transactions.filter((t) => {
     const matchesSearch = t.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || t.type === selectedType;
@@ -42,7 +58,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
 
   return (
     <div className="bg-[#FBF7EE] rounded-2xl border border-[#DDD0B8] shadow-xs overflow-hidden">
-      {/* Header and Filters */}
+      {/* Table Header Controls: Search & Filters */}
       <div className="p-6 border-b border-[#EFE7D6]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
@@ -52,7 +68,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
             </p>
           </div>
 
-          {/* Search bar */}
+          {/* Search bar input */}
           <div className="relative min-w-[240px]">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7E22CE] pointer-events-none" />
             <input
@@ -72,7 +88,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
           </span>
           <button
             onClick={() => setSelectedType('all')}
-            className={`px-3 py-1 rounded-lg font-bold border transition ${
+            className={`px-3 py-1 rounded-lg font-bold border transition cursor-pointer ${
               selectedType === 'all'
                 ? 'bg-[#581C87] text-[#FAF5EB] border-[#4A154B]'
                 : 'bg-[#EFE7D6] text-[#5B4469] border-[#DDD0B8] hover:bg-[#E8DEC8]'
@@ -82,7 +98,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
           </button>
           <button
             onClick={() => setSelectedType('income')}
-            className={`px-3 py-1 rounded-lg font-bold border transition ${
+            className={`px-3 py-1 rounded-lg font-bold border transition cursor-pointer ${
               selectedType === 'income'
                 ? 'bg-[#581C87] text-[#FAF5EB] border-[#3B0764]'
                 : 'bg-[#EFE7D6] text-[#5B4469] border-[#DDD0B8] hover:bg-[#E8DEC8]'
@@ -92,7 +108,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
           </button>
           <button
             onClick={() => setSelectedType('expense')}
-            className={`px-3 py-1 rounded-lg font-bold border transition ${
+            className={`px-3 py-1 rounded-lg font-bold border transition cursor-pointer ${
               selectedType === 'expense'
                 ? 'bg-[#831843] text-[#FAF5EB] border-[#701A75]'
                 : 'bg-[#EFE7D6] text-[#5B4469] border-[#DDD0B8] hover:bg-[#E8DEC8]'
@@ -101,6 +117,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
             Expenses Only
           </button>
 
+          {/* Category Dropdown */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -117,7 +134,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
         </div>
       </div>
 
-      {/* Transactions List / Table */}
+      {/* Transactions List / Empty State */}
       {filteredTransactions.length === 0 ? (
         <div className="py-16 px-4 text-center">
           <div className="w-12 h-12 rounded-2xl bg-[#EFE7D6] text-[#7E22CE] flex items-center justify-center mx-auto mb-3 border border-[#DDD0B8]">
@@ -150,7 +167,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                     key={t._id}
                     className="hover:bg-[#F3EBDD] transition-colors group"
                   >
-                    {/* Title + Type icon */}
+                    {/* Title + Direction Icon */}
                     <td className="py-4 px-6 font-semibold text-[#260E36]">
                       <div className="flex items-center gap-3">
                         <div
@@ -172,7 +189,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                       </div>
                     </td>
 
-                    {/* Category */}
+                    {/* Category pill */}
                     <td className="py-4 px-4 whitespace-nowrap">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${
@@ -188,7 +205,7 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                       {formatDate(t.date)}
                     </td>
 
-                    {/* Amount */}
+                    {/* Formatted Amount in Rupees (+ for income, - for expense) */}
                     <td
                       className={`py-4 px-4 text-right font-extrabold whitespace-nowrap ${
                         isIncome ? 'text-[#581C87]' : 'text-[#831843]'
@@ -197,20 +214,22 @@ const TransactionList = ({ transactions = [], onEdit, onDelete, isDeletingId }) 
                       {isIncome ? '+' : '-'} {formatCurrency(t.amount)}
                     </td>
 
-                    {/* Actions */}
+                    {/* Edit and Delete action buttons */}
                     <td className="py-4 px-6 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
+                        {/* Edit Button */}
                         <button
                           onClick={() => onEdit(t)}
-                          className="p-1.5 rounded-lg text-[#5B4469] hover:text-[#581C87] hover:bg-[#EED9F7] transition"
+                          className="p-1.5 rounded-lg text-[#5B4469] hover:text-[#581C87] hover:bg-[#EED9F7] transition cursor-pointer"
                           title="Edit transaction"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
+                        {/* Delete Button */}
                         <button
                           onClick={() => onDelete(t._id)}
                           disabled={isDeletingId === t._id}
-                          className="p-1.5 rounded-lg text-[#5B4469] hover:text-[#831843] hover:bg-[#F5E1E6] transition disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-[#5B4469] hover:text-[#831843] hover:bg-[#F5E1E6] transition disabled:opacity-50 cursor-pointer"
                           title="Delete transaction"
                         >
                           <Trash2 className="w-4 h-4" />

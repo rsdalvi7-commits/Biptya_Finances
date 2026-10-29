@@ -1,3 +1,11 @@
+/**
+ * SUMMARY:
+ * This file handles all user account operations:
+ * 1. POST /api/auth/register : Creates a new account, hashes password with bcrypt, and returns a JWT token.
+ * 2. POST /api/auth/login    : Validates email and password, then returns a JWT token if credentials match.
+ * 3. GET /api/auth/me        : Protected route that returns the currently logged-in user's profile information.
+ */
+
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -6,45 +14,53 @@ import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Generate JWT token helper
+/**
+ * Helper function: Creates a signed JSON Web Token (JWT) containing the user's ID.
+ * The token is valid for 7 days.
+ */
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: '7d',
   });
 };
 
-// @route   POST /api/auth/register
-// @desc    Register a new user
-// @access  Public
+// ==========================================
+// 1. REGISTER NEW USER
+// POST /api/auth/register
+// ==========================================
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate that both fields exist
     if (!email || !password) {
       return res.status(400).json({ message: 'Please provide both email and password' });
     }
 
+    // Check minimum password length
     if (password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
 
-    // Check if user already exists
+    // Check if an account already exists with this email address
     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
       return res.status(400).json({ message: 'An account with this email already exists' });
     }
 
-    // Hash password
+    // Encrypt the plain text password using bcrypt with 10 salt rounds
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
+    // Create and save the new user record in MongoDB
     const newUser = new User({
       email: email.toLowerCase().trim(),
       password: hashedPassword,
     });
 
     const savedUser = await newUser.save();
+
+    // Create a new login token so user is automatically logged in upon registering
     const token = generateToken(savedUser._id);
 
     return res.status(201).json({
@@ -61,29 +77,32 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/login
-// @desc    Authenticate user and get token
-// @access  Public
+// ==========================================
+// 2. USER LOGIN
+// POST /api/auth/login
+// ==========================================
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate that both fields are supplied
     if (!email || !password) {
       return res.status(400).json({ message: 'Please provide both email and password' });
     }
 
-    // Check for user
+    // Find the user by email in the database
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Validate password
+    // Compare the entered password with the encrypted password in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
+    // Password is correct! Generate a new JWT session token
     const token = generateToken(user._id);
 
     return res.json({
@@ -100,11 +119,13 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// @route   GET /api/auth/me
-// @desc    Get current user profile (using token)
-// @access  Private
+// ==========================================
+// 3. GET CURRENT LOGGED IN USER
+// GET /api/auth/me (Protected with auth middleware)
+// ==========================================
 router.get('/me', auth, async (req, res) => {
   try {
+    // Look up user by the ID extracted from the verified JWT token (exclude password)
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -117,4 +138,3 @@ router.get('/me', auth, async (req, res) => {
 });
 
 export default router;
-

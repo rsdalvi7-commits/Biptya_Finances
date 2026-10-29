@@ -1,6 +1,17 @@
+/**
+ * SUMMARY:
+ * This component calculates and displays the 3 high-level financial summary cards:
+ * 1. Current Balance : (Total Income - Total Expenses) in Rupees (₹) with a Surplus/Deficit status pill.
+ * 2. Total Income    : Sum of all income transactions with entry counter.
+ * 3. Total Expenses  : Sum of all expense transactions with entry counter.
+ *
+ * Uses the Indian numbering system format (₹ Lakhs / Crores) and the Cream & Purple theme.
+ */
+
 import React from 'react';
 import { ArrowUpRight, ArrowDownRight, Wallet } from 'lucide-react';
 
+// Format numeric values into Indian Rupees (e.g. ₹5,000.00 or ₹1,50,000.00)
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -10,19 +21,24 @@ const formatCurrency = (amount) => {
 };
 
 const SummaryCards = ({ transactions = [] }) => {
+  // 1. Calculate sum of all transactions where type is 'income'
   const totalIncome = transactions
     .filter((t) => t.type === 'income')
     .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
 
+  // 2. Calculate sum of all transactions where type is 'expense'
   const totalExpenses = transactions
     .filter((t) => t.type === 'expense')
     .reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
 
+  // 3. Current net balance = Income minus Expenses
   const currentBalance = totalIncome - totalExpenses;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-      {/* Current Balance Card */}
+      {/* ========================================================
+          CARD 1: CURRENT BALANCE (Regal Purple Gradient Card)
+          ======================================================== */}
       <div className="bg-gradient-to-br from-[#4A154B] via-[#581C87] to-[#3B0764] rounded-2xl p-6 text-[#FAF5EB] shadow-xl shadow-[#581C87]/20 flex flex-col justify-between relative overflow-hidden border border-[#3B0764]">
         <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 w-32 h-32 rounded-full bg-[#EED9F7]/10 blur-xl pointer-events-none" />
         <div>
@@ -52,7 +68,9 @@ const SummaryCards = ({ transactions = [] }) => {
         </div>
       </div>
 
-      {/* Total Income Card */}
+      {/* ========================================================
+          CARD 2: TOTAL INCOME (Warm Cream Card)
+          ======================================================== */}
       <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -75,7 +93,9 @@ const SummaryCards = ({ transactions = [] }) => {
         </div>
       </div>
 
-      {/* Total Expenses Card */}
+      {/* ========================================================
+          CARD 3: TOTAL EXPENSES (Warm Cream Card)
+          ======================================================== */}
       <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between mb-3">

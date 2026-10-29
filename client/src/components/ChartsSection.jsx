@@ -1,3 +1,14 @@
+/**
+ * SUMMARY:
+ * This component renders two interactive data visualizations using the Recharts library:
+ * 1. Expenses by Category (Donut/Pie Chart):
+ *    - Calculates total spending per category (Food, Rent, Salary, Entertainment, Utilities, Other).
+ *    - Displays percentage share and formatted rupee values.
+ * 2. Income vs. Expenses (Bar Chart):
+ *    - Directly contrasts Total Inflow vs Total Outflow side-by-side with net cash flow indicator.
+ * Both charts include custom interactive tooltips and graceful empty states if no data is recorded.
+ */
+
 import React from 'react';
 import {
   PieChart,
@@ -14,15 +25,17 @@ import {
 } from 'recharts';
 import { PieChart as PieIcon, BarChart3, Info } from 'lucide-react';
 
+// Color palette mapping each category to a distinct harmonious shade
 const CATEGORY_COLORS = {
-  Food: '#C2410C',
-  Rent: '#6B21A8',
-  Salary: '#047857',
-  Entertainment: '#A21CAF',
-  Utilities: '#1D4ED8',
-  Other: '#78350F',
+  Food: '#C2410C',          // Terracotta
+  Rent: '#6B21A8',          // Deep purple
+  Salary: '#047857',        // Forest green
+  Entertainment: '#A21CAF', // Magenta purple
+  Utilities: '#1D4ED8',     // Deep royal blue
+  Other: '#78350F',         // Warm bronze
 };
 
+// Formats numbers into integer rupees for concise chart labels (e.g. ₹5,000)
 const formatCurrency = (val) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -32,6 +45,7 @@ const formatCurrency = (val) => {
   }).format(val);
 };
 
+// Custom interactive tooltip that pops up on hover (Deep purple box with cream text)
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0];
@@ -49,15 +63,19 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const ChartsSection = ({ transactions = [] }) => {
-  // Aggregate expenses by category
+  // -------------------------------------------------------------
+  // 1. DATA PREPARATION: AGGREGATE EXPENSES BY CATEGORY (FOR PIE)
+  // -------------------------------------------------------------
   const expenses = transactions.filter((t) => t.type === 'expense');
   const totalExpenseAmount = expenses.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+  // Group sum of amounts by category name
   const categoryMap = {};
   expenses.forEach((t) => {
     categoryMap[t.category] = (categoryMap[t.category] || 0) + Number(t.amount || 0);
   });
 
+  // Convert map to array format required by Recharts
   const pieData = Object.keys(categoryMap).map((cat) => ({
     name: cat,
     value: categoryMap[cat],
@@ -67,7 +85,9 @@ const ChartsSection = ({ transactions = [] }) => {
         : 0,
   }));
 
-  // Aggregate income vs expense for Bar chart
+  // -------------------------------------------------------------
+  // 2. DATA PREPARATION: INCOME VS EXPENSES (FOR BAR CHART)
+  // -------------------------------------------------------------
   const totalIncome = transactions
     .filter((t) => t.type === 'income')
     .reduce((sum, t) => sum + Number(t.amount || 0), 0);
@@ -76,18 +96,20 @@ const ChartsSection = ({ transactions = [] }) => {
     {
       category: 'Income',
       amount: totalIncome,
-      color: '#6B21A8',
+      color: '#6B21A8', // Royal purple bar
     },
     {
       category: 'Expenses',
       amount: totalExpenseAmount,
-      color: '#9F1239',
+      color: '#9F1239', // Rich wine bar
     },
   ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Expenses by Category (Pie Chart) */}
+      {/* =========================================================
+          CHART 1: PIE CHART (EXPENSES BY CATEGORY)
+          ========================================================= */}
       <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs flex flex-col justify-between">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -104,6 +126,7 @@ const ChartsSection = ({ transactions = [] }) => {
           </span>
         </div>
 
+        {/* Empty state if no expense transactions exist */}
         {pieData.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-[#5B4469]">
             <Info className="w-8 h-8 mb-2 opacity-60 text-[#7E22CE]" />
@@ -145,7 +168,9 @@ const ChartsSection = ({ transactions = [] }) => {
         )}
       </div>
 
-      {/* Income vs Expenses (Bar Chart) */}
+      {/* =========================================================
+          CHART 2: BAR CHART (INCOME VS EXPENSES)
+          ========================================================= */}
       <div className="bg-[#FBF7EE] rounded-2xl p-6 border border-[#DDD0B8] shadow-xs flex flex-col justify-between">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -168,6 +193,7 @@ const ChartsSection = ({ transactions = [] }) => {
           </span>
         </div>
 
+        {/* Empty state if no transactions exist */}
         {totalIncome === 0 && totalExpenseAmount === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-[#5B4469]">
             <Info className="w-8 h-8 mb-2 opacity-60 text-[#7E22CE]" />

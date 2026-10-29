@@ -1,15 +1,25 @@
+/**
+ * SUMMARY:
+ * This component renders the top navigation header bar across the Dashboard:
+ * - Displays the "Biptya Finances" logo and name with a Dashboard badge.
+ * - Shows the email address of the currently logged-in user.
+ * - Provides a "Logout" button that signs the user out.
+ * - Styled in the cream & purple theme with Times New Roman font.
+ */
+
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Wallet, LogOut, UserCircle } from 'lucide-react';
 
 const Navbar = () => {
+  // Grab current user details and logout action from AuthContext
   const { user, logout } = useAuth();
 
   return (
     <header className="bg-[#FBF7EE] border-b border-[#DDD0B8] sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo & Brand */}
+          {/* Logo & Brand Name */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#581C87] flex items-center justify-center text-[#FAF5EB] shadow-md shadow-[#581C87]/20">
               <Wallet className="w-5 h-5" />
@@ -24,16 +34,18 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* User profile & Logout */}
+          {/* User Profile Pill & Logout Button */}
           <div className="flex items-center gap-3 sm:gap-4">
+            {/* Shows logged in user's email */}
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EFE7D6] text-[#3B194E] border border-[#DDD0B8] text-xs font-semibold">
               <UserCircle className="w-4 h-4 text-[#7E22CE]" />
               <span className="max-w-[180px] truncate">{user?.email || 'User'}</span>
             </div>
 
+            {/* Logout button */}
             <button
               onClick={logout}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-[#3B194E] bg-[#EFE7D6] hover:bg-[#581C87] hover:text-[#FAF5EB] transition border border-[#DDD0B8]"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-[#3B194E] bg-[#EFE7D6] hover:bg-[#581C87] hover:text-[#FAF5EB] transition border border-[#DDD0B8] cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
